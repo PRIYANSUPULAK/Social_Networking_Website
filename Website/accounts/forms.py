@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 
 # Name of the class must not match UserCreationForm
-class UserCreateForm(UserCreateForm):
+class UserCreateForm(UserCreationForm):
 
     class Meta:
         #fields of the model we want to use in the form
