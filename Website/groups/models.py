@@ -2,6 +2,7 @@ from django.db import models
 # slugify helps in removing any character which isn't alpha-numeric or underscores or hyphens
 # Mainly, slugify converts spaces into '-' for making it a url
 from django.utils.text import slugify
+from django.urls import reverse
 
 # pip install misaka
 # misaka helps in marking down (link links) inside the posts.
@@ -19,7 +20,7 @@ class Group(models.Model):
     name = models.CharField(max_length = 255, unique = True)
 # Slugs are a “URL friendly” version of the product or category name. They are typically lowercase, contain no special characters and hyphens are used in place of spaces.
 # Unicode provides a unique code value for every character, regardless of the platform, program, or language.
-    slug = models.slugField(allow_unicode = True, unique = True)
+    slug = models.SlugField(allow_unicode = True, unique = True)
     description = models.TextField(blank = True, default = '')
     description_html = models.TextField(editable = False, default = '', blank = True)
     members = models.ManyToManyField(User, through = 'GroupMember')
@@ -30,7 +31,7 @@ class Group(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        self.description_html = misaka.html(self.discription)
+        self.description_html = misaka.html(self.description)
         # This super is same as of java. It is saving to the base class
         super().save(*args,**kwargs)
 
@@ -41,8 +42,8 @@ class Group(models.Model):
         ordering = ['name']
 
 class GroupMember(models.Model):
-    group = models.ForeignKey(Group, related_name = "memberships")
-    user = models.ForeignKey(User, related_name = "user_groups")
+    group = models.ForeignKey(Group, related_name = "memberships",on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name = "user_groups",on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.username
